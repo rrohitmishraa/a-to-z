@@ -213,7 +213,7 @@ const SpeedyAlphabet = () => {
 
         <div className="mb-6">
           <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 text-left">
-            Phone Leaderboard
+            📱 Phone Top 3
           </h3>
           {highScoresPhone.length > 0 ? (
             <ol className="list-decimal list-inside text-gray-700 space-y-2">
@@ -242,7 +242,7 @@ const SpeedyAlphabet = () => {
 
         <div className="mb-6">
           <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 text-left">
-            Computer Leaderboard
+            💻 Computer Top 3
           </h3>
           {highScoresComputer.length > 0 ? (
             <ol className="list-decimal list-inside text-gray-700 space-y-2">
