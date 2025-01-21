@@ -136,6 +136,7 @@ const SpeedyAlphabet = () => {
     setElapsedTime("0.00");
     setStartTime(null);
     setTimerRunning(false);
+    setStartTyping(false);
     clearInterval(intervalId);
     setTotalTimeForAlphabet(null);
     setAlphabetTimes([]); // Reset alphabet timings
@@ -182,7 +183,7 @@ const SpeedyAlphabet = () => {
         />
         <div className="mt-4 text-center">
           <p className="text-orange-600 text-lg sm:text-xl">
-            ⏱ Total Time:{" "}
+            ⏱ Total Time:
             <span className="font-bold">{elapsedTime} seconds</span>
           </p>
         </div>
@@ -225,8 +226,8 @@ const SpeedyAlphabet = () => {
                     className="font-bold text-orange-600"
                   >
                     {entry.name}
-                  </a>{" "}
-                  -{" "}
+                  </a>
+                  -
                   <span className="text-gray-600">
                     {entry.time.toFixed(2)} seconds{" "}
                     {/* Displaying 2 decimals */}
