@@ -20,7 +20,9 @@ const SpeedyAlphabet = () => {
     // Fetch the leaderboard when the component is mounted
     const fetchLeaderboard = async () => {
       try {
-        const response = await fetch("http://localhost:5002/api/scores");
+        const response = await fetch(
+          "https://a-to-z-server-oa7r.onrender.com/api/scores"
+        );
         if (response.ok) {
           const scores = await response.json();
 
@@ -180,17 +182,20 @@ const SpeedyAlphabet = () => {
 
       // Now submit the new score to the backend
       try {
-        const response = await fetch("http://localhost:5002/api/scores", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: userInstagram,
-            time: tempScore.time,
-            device,
-          }),
-        });
+        const response = await fetch(
+          "https://a-to-z-server-oa7r.onrender.com/api/scores",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: userInstagram,
+              time: tempScore.time,
+              device,
+            }),
+          }
+        );
 
         if (response.ok) {
           // Fetch the updated leaderboard from the server
