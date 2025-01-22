@@ -183,7 +183,7 @@ const SpeedyAlphabet = () => {
         />
         <div className="mt-4 text-center">
           <p className="text-orange-600 text-lg sm:text-xl">
-            ⏱ Total Time:
+            ⏱ Total Time:{" "}
             <span className="font-bold">{elapsedTime} seconds</span>
           </p>
         </div>
@@ -213,7 +213,7 @@ const SpeedyAlphabet = () => {
 
         <div className="mb-6">
           <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 text-left">
-            📱 Phone Top 3
+            Top 3 on 📱 Phone
           </h3>
           {highScoresPhone.length > 0 ? (
             <ol className="list-decimal list-inside text-gray-700 space-y-2">
@@ -242,7 +242,7 @@ const SpeedyAlphabet = () => {
 
         <div className="mb-6">
           <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 text-left">
-            💻 Computer Top 3
+            Top 3 on 💻 Computer
           </h3>
           {highScoresComputer.length > 0 ? (
             <ol className="list-decimal list-inside text-gray-700 space-y-2">
