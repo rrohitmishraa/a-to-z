@@ -9,13 +9,13 @@ const SpeedyAlphabet = () => {
   const [intervalId, setIntervalId] = useState(null);
   const [alphabetTimes, setAlphabetTimes] = useState([]);
   const [tempScore, setTempScore] = useState(null); // Temporary score storage
-  const [highScoresPhone, setHighScoresPhone] = useState([]);
   const [highScoresComputer, setHighScoresComputer] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userInstagram, setUserInstagram] = useState("");
   const [totalTimeForAlphabet, setTotalTimeForAlphabet] = useState(0);
-  const [isPhone, setIsPhone] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [highScores, setHighScores] = useState([]); // Initialize state for leaderboard scores
+  const [loading, setLoading] = useState(true); // Loading state for async fetch
 
   useEffect(() => {
     // Fetch the leaderboard when the component is mounted
@@ -26,21 +26,18 @@ const SpeedyAlphabet = () => {
         );
         if (response.ok) {
           const scores = await response.json();
+          console.log("Fetched scores:", scores); // Log to verify the response
 
-          // Sort scores and take the top 3
-          const topPhoneScores = scores.phone.sort((a, b) => a - b).slice(0, 3);
-          const topComputerScores = scores.computer
-            .sort((a, b) => a - b)
-            .slice(0, 3);
-
-          // Update the state with the top 3 scores
-          setHighScoresPhone(topPhoneScores);
-          setHighScoresComputer(topComputerScores);
+          // Sort the scores by time (ascending) and take the top 3
+          const topScores = scores.sort((a, b) => a.time - b.time).slice(0, 3);
+          setHighScores(topScores); // Set the top 3 scores to state
         } else {
           console.error("Failed to fetch leaderboard");
         }
       } catch (error) {
         console.error("Error fetching leaderboard:", error);
+      } finally {
+        setLoading(false); // Set loading to false after fetching
       }
     };
 
@@ -151,12 +148,9 @@ const SpeedyAlphabet = () => {
   };
 
   const updateHighScores = async (newTime) => {
-    // const device = isPhone ? "phone" : "computer";
-    const currentScores = isPhone ? highScoresPhone : highScoresComputer;
-
-    // Check if the new time qualifies for the top 3
+    // Access the unified highScores state (assumes highScores holds all scores)
     const qualifiesForTop3 =
-      currentScores.length < 3 || newTime < currentScores[2].time;
+      highScores.length < 3 || newTime < highScores[2].time;
 
     if (qualifiesForTop3) {
       // Temporarily store the new score and open the modal
@@ -172,20 +166,12 @@ const SpeedyAlphabet = () => {
     if (userInstagram.trim() !== "" && tempScore) {
       const newScore = { ...tempScore, name: userInstagram };
 
-      const device = isPhone ? "phone" : "computer";
-      const currentScores = isPhone ? highScoresPhone : highScoresComputer;
-
       // Add the new score to the leaderboard and sort
-      const updatedScores = [...currentScores, newScore]
+      const updatedScores = [...highScores, newScore]
         .sort((a, b) => a.time - b.time)
         .slice(0, 3); // Keep only top 3
 
-      // Update the leaderboard state locally first
-      if (isPhone) {
-        setHighScoresPhone(updatedScores);
-      } else {
-        setHighScoresComputer(updatedScores);
-      }
+      setHighScores(updatedScores); // Update the leaderboard state
 
       // Close the modal before sending the request to avoid issues
       setTempScore(null);
@@ -194,10 +180,10 @@ const SpeedyAlphabet = () => {
       // Show "Submitting..." message
       setSubmitting(true);
 
-      // Submit the new score to the backend
       try {
+        // Send score to the backend (No device field here)
         const response = await fetch(
-          "https://a-to-z-server-oa7r.onrender.com/api/scores",
+          "https://a-to-z-server-oa7r.onrender.com/api/scores", // Single endpoint
           {
             method: "POST",
             headers: {
@@ -206,7 +192,7 @@ const SpeedyAlphabet = () => {
             body: JSON.stringify({
               name: userInstagram,
               time: tempScore.time,
-              device,
+              // No device field here
             }),
           }
         );
@@ -214,21 +200,7 @@ const SpeedyAlphabet = () => {
         if (response.ok) {
           // Fetch the updated leaderboard from the server
           const updatedScoresFromServer = await response.json();
-
-          // Only update the scores from the server if they are different
-          const phoneScores = updatedScoresFromServer.filter(
-            (score) => score.device === "phone"
-          );
-          const computerScores = updatedScoresFromServer.filter(
-            (score) => score.device === "computer"
-          );
-
-          // Update the states
-          if (isPhone) {
-            setHighScoresPhone(phoneScores);
-          } else {
-            setHighScoresComputer(computerScores);
-          }
+          setHighScores(updatedScoresFromServer); // Update the state with all scores
         } else {
           console.error("Failed to submit score");
         }
@@ -317,48 +289,17 @@ const SpeedyAlphabet = () => {
       )}
 
       {/* Leaderboard */}
-      {/* Leaderboard */}
       <div className="w-full max-w-2xl bg-white shadow-xl rounded-lg p-6 sm:p-8">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 text-left">
           Leaderboard
         </h2>
 
         <div className="mb-6">
-          <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 text-left">
-            Top 3 on 📱 Phone
-          </h3>
-          {highScoresPhone.length > 0 ? (
+          {loading ? (
+            <p className="text-gray-500 text-center">Loading leaderboard...</p>
+          ) : highScores.length > 0 ? (
             <ol className="list-decimal list-inside text-gray-700 space-y-2">
-              {highScoresPhone.map((entry, index) => (
-                <li key={index}>
-                  <a
-                    href={getInstagramLink(entry.name)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-bold text-orange-600"
-                  >
-                    {entry.name}
-                  </a>
-                  -
-                  <span className="text-gray-600">
-                    {entry.time.toFixed(2)} seconds{" "}
-                    {/* Displaying 2 decimals */}
-                  </span>
-                </li>
-              ))}
-            </ol>
-          ) : (
-            <p className="text-gray-500 text-center">No high scores yet!</p>
-          )}
-        </div>
-
-        <div className="mb-6">
-          <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 text-left">
-            Top 3 on 💻 Computer
-          </h3>
-          {highScoresComputer.length > 0 ? (
-            <ol className="list-decimal list-inside text-gray-700 space-y-2">
-              {highScoresComputer.map((entry, index) => (
+              {highScores.map((entry, index) => (
                 <li key={index}>
                   <a
                     href={getInstagramLink(entry.name)}
