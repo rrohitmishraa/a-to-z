@@ -15,6 +15,7 @@ const SpeedyAlphabet = () => {
   const [userInstagram, setUserInstagram] = useState("");
   const [totalTimeForAlphabet, setTotalTimeForAlphabet] = useState(0);
   const [isPhone, setIsPhone] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     // Fetch the leaderboard when the component is mounted
@@ -186,7 +187,14 @@ const SpeedyAlphabet = () => {
         setHighScoresComputer(updatedScores);
       }
 
-      // Now submit the new score to the backend
+      // Close the modal before sending the request to avoid issues
+      setTempScore(null);
+      setIsModalOpen(false);
+
+      // Show "Submitting..." message
+      setSubmitting(true);
+
+      // Submit the new score to the backend
       try {
         const response = await fetch(
           "https://a-to-z-server-oa7r.onrender.com/api/scores",
@@ -226,11 +234,10 @@ const SpeedyAlphabet = () => {
         }
       } catch (error) {
         console.error("Error submitting score:", error);
+      } finally {
+        // Hide "Submitting..." message
+        setSubmitting(false);
       }
-
-      // Reset the temporary score and close the modal
-      setTempScore(null);
-      setIsModalOpen(false);
     }
   };
 
@@ -391,12 +398,18 @@ const SpeedyAlphabet = () => {
               onChange={handleInstagramChange}
               className="w-full p-3 border border-gray-300 rounded-lg mb-4 text-lg sm:text-xl"
               placeholder="e.g. @yourusername"
+              disabled={submitting} // Disable input while submitting
             />
             <button
               onClick={handleInstagramSubmit}
-              className="px-6 py-3 bg-orange-500 text-white font-semibold rounded-full hover:bg-orange-600 w-full text-lg sm:text-xl"
+              className={`px-6 py-3 text-white font-semibold rounded-full w-full text-lg sm:text-xl ${
+                submitting
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-orange-500 hover:bg-orange-600"
+              }`}
+              disabled={submitting} // Disable button while submitting
             >
-              Submit
+              {submitting ? "Submitting..." : "Submit"}
             </button>
           </div>
         </div>
