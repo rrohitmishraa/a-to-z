@@ -13,8 +13,8 @@ const SpeedyAlphabet = () => {
   const [highScoresComputer, setHighScoresComputer] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userInstagram, setUserInstagram] = useState("");
-  const [setTotalTimeForAlphabet] = useState(null);
-  const [isPhone] = useState(false);
+  const [totalTimeForAlphabet, setTotalTimeForAlphabet] = useState(0);
+  const [isPhone, setIsPhone] = useState(false);
 
   useEffect(() => {
     // Fetch the leaderboard when the component is mounted
@@ -26,9 +26,15 @@ const SpeedyAlphabet = () => {
         if (response.ok) {
           const scores = await response.json();
 
-          // Update the state with the fetched scores
-          setHighScoresPhone(scores.phone);
-          setHighScoresComputer(scores.computer);
+          // Sort scores and take the top 3
+          const topPhoneScores = scores.phone.sort((a, b) => a - b).slice(0, 3);
+          const topComputerScores = scores.computer
+            .sort((a, b) => a - b)
+            .slice(0, 3);
+
+          // Update the state with the top 3 scores
+          setHighScoresPhone(topPhoneScores);
+          setHighScoresComputer(topComputerScores);
         } else {
           console.error("Failed to fetch leaderboard");
         }
