@@ -236,8 +236,8 @@ const SpeedyAlphabet = () => {
     setUserInstagram(value);
   };
 
-  const getInstagramLink = () => {
-    return `https://instagram.com/${userInstagram.replace("@", "")}`;
+  const getInstagramLink = (name) => {
+    return `https://instagram.com/${name.replace("@", "")}`;
   };
 
   return (
