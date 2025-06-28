@@ -9,7 +9,6 @@ const SpeedyAlphabet = () => {
   const [intervalId, setIntervalId] = useState(null);
   const [alphabetTimes, setAlphabetTimes] = useState([]);
   const [tempScore, setTempScore] = useState(null); // Temporary score storage
-  const [highScoresComputer, setHighScoresComputer] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [userInstagram, setUserInstagram] = useState("");
   const [totalTimeForAlphabet, setTotalTimeForAlphabet] = useState(0);
